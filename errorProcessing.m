@@ -5,6 +5,14 @@ filteredError = filtfilt(errorFilter,errorData);
 figure;
 plot([errorData,filteredError]);
 %%
+fn = 50;
+wn = 2 * pi * 50;
+zeta = 0.7;
+lp = tf(wn*wn,[1,2*wn*zeta,wn*wn]);
+figure;bodeplot(lp);
+lpDis = c2d(lp,1/5000,'tustin');
+[b,a] = tfdata(lpDis,'v');
+%%
 tempError = errorData(80:180);
 tempErrorFiltered = filtfilt(errorFilter,tempError);
 figure;

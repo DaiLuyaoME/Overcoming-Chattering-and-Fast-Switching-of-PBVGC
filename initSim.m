@@ -44,7 +44,7 @@ global currentMax;
 currentMin = 1e12;
 currentMax = -1e12;
 global alpha;
-alpha = 0.6;
+alpha = 1;
 global alphaCount;
 alphaCount = 0;
 global alphaBuffer;
@@ -56,8 +56,8 @@ global deDeltaLowerBound;
 deDeltaLowerBound = 1e-5;
 
 
-dwellTime = 5;
-num = 10;
+dwellTime = 1;
+num = 2;
 alphaBuffer = [];
 for i = 1:num
     temp = 1 / num * i * ones(dwellTime,1);
@@ -65,5 +65,21 @@ for i = 1:num
     
 end
 figure;plot(alphaBuffer);
+%%
+% alphaBuffer = [0., 0.462117, 0.761594, 0.905148, 0.964028, 0.964028, 0.964028, 0.986614,0.986614,0.986614, 0.995055 , 0.995055, 0.995055, 0.999, 0.999, 0.999];
+% % alphaBuffer = alphaBuffer(end:-1:1);
+% figure;plot(alphaBuffer);
 
-
+%%
+global alpha1;
+global alpha2;
+alpha1 = 0.2;
+alpha2 = 0.6;
+tau = tan(pi / 2 * (alpha2 - alpha1) / (alpha2 + alpha1) );
+beta = 1;
+global f;
+f = @(x) (alpha1 + alpha2) / pi * atan(x-tau) + (alpha2 - alpha1) * 0.5;
+figure;
+x = linspace(-50,50,10000);
+plot(x,f(x));
+grid on;

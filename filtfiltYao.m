@@ -10,6 +10,8 @@ function y = filtfiltYao(dataFilter,data)
 % % figure;
 % % plot([errorData,temp]);
 [b,a] = tf(dataFilter);
+% b = [0.000944487536776733,0.00188897507355347,0.000944487536776733];
+% a = [1,-1.91204292815954,0.915820878306646];
     if isrow(data) && ~(numel(size(data))>2)
         xCol = data.';
     else
@@ -60,7 +62,7 @@ end
 
 
 function yout = ffOneChanCat(b,a,y,zi,nfact,L)
-
+    
 coder.varsize('yout');
 yout = y;
 for ii=1:L

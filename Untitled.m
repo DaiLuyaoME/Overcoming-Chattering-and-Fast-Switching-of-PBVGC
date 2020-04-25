@@ -12,3 +12,7 @@ plot(out.time,ones(size(out.time)) * 30);
 ylabel('step response (\mum)');
 xlabel('time (s)');
 set(gca,'fontsize',16);
+%%
+temp = filtfiltYao(errorFilter,Err.signals.values);
+figure;
+plot(Err.time,[Err.signals.values,temp]);

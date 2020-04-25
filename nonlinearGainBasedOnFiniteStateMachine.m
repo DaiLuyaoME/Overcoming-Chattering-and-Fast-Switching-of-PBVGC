@@ -167,7 +167,7 @@ sizes = simsizes;
 
 sizes.NumContStates  = 0;
 sizes.NumDiscStates  = 0;
-sizes.NumOutputs     = 2;
+sizes.NumOutputs     = 3;
 sizes.NumInputs      = 2;
 sizes.DirFeedthrough = 1;
 sizes.NumSampleTimes = 1;   % at least one sample time is needed
@@ -262,8 +262,8 @@ de = u(2);
 %             currentMax = e;
 %             currentErrorState = ErrorStates.PositiveErrorUp;
 %         end
-%         
-%         
+%
+%
 %     case ErrorStates.NegativeErrorDown
 %         if e < currentMin - delta && e <= 0
 %             currentMin = min(e,currentMin);
@@ -274,8 +274,8 @@ de = u(2);
 %             currentMax = e;
 %             currentErrorState = ErrorStates.PositiveErrorUp;
 %         end
-%         
-%         
+%
+%
 %     case ErrorStates.NegativeErrorUp
 %         if e > currentMax - delta && e < 0
 %             currentMax = max(e,currentMax);
@@ -286,8 +286,8 @@ de = u(2);
 %             currentMin = e;
 %             currentErrorState = ErrorStates.NegativeErrorDown;
 %         end
-%         
-%         
+%
+%
 %     case ErrorStates.PositiveErrorUp
 %         if e > currentMax + delta && e >= 0
 %             currentMax = max(e,currentMax);
@@ -298,12 +298,12 @@ de = u(2);
 %             currentMin = e;
 %             currentErrorState = ErrorStates.NegativeErrorDown;
 %         end
-%         
-%         
+%
+%
 % end
 
 
-% if currentErrorState == ErrorStates.NegativeErrorDown || currentErrorState == ErrorStates.PositiveErrorUp 
+% if currentErrorState == ErrorStates.NegativeErrorDown || currentErrorState == ErrorStates.PositiveErrorUp
 %     y = alpha * e;
 % %     num = numel(alphaBuffer);
 % %     if alphaCount < num
@@ -321,7 +321,7 @@ de = u(2);
 %         y = 0;
 %     end
 % %     y = 0;
-%     
+%
 % end
 
 %% method based on online zero phase error filtering
@@ -330,37 +330,47 @@ errorBuffer(end) = e;
 global errorFilter;
 % filteredError = filtfilt(errorFilter,errorBuffer);
 filteredError = filtfiltYao(errorFilter,errorBuffer);
-% filteredError = errorBuffer;
+%filteredError = errorBuffer;
 tempE = filteredError(end);
 tempDe = filteredError(end) - filteredError(end-1);
 % errorBuffer(end) = tempE;
 
-if tempE * tempDe > 0
-    y = tempE * alpha;
-    alphaCount = numel(alphaBuffer);
-else
-    if alphaCount > 0
-        y = alpha * tempE * alphaBuffer(alphaCount);
-        alphaCount = alphaCount - 1;
-    else
-        y = 0;
-    end
 
+
+transitionType = 1; % 1 for step + dwell time; 2 for sigmoid like function
+
+switch transitionType
+    case 1
+        
+        if tempE * tempDe > 0
+            y = tempE * alpha;
+            alphaCount = numel(alphaBuffer);
+        else
+            if alphaCount > 0
+                y = alpha * tempE * alphaBuffer(alphaCount);
+                alphaCount = alphaCount - 1;
+            else
+                y = 0;
+            end
+            %  y = 0;
+        end
+        gain = 0;
+    case 2
+        global f;
+        x = tempE * tempDe * 5000;
+        x = x / (3e-9) * 10;
+        gain = f(x);
+        y =  gain * tempE;
+%         y = 0;
 end
-
-% if t>0.07
-%     y = 0;
-% end
-
-
-
 
 %%
 
 
 
 
-sys = [y,tempE];
+% sys = [y,tempE * tempDe,gain];
+sys = [y,tempE,gain];
 
 % end mdlOutputs
 
