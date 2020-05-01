@@ -16,3 +16,12 @@ set(gca,'fontsize',16);
 temp = filtfiltYao(errorFilter,Err.signals.values);
 figure;
 plot(Err.time,[Err.signals.values,temp]);
+%%
+temp = Err.signals.values * 1e6;
+temp = temp(1:end);
+[b,a] = tf(errorFilter);
+zi = [0.1,0.3];
+temp1 = filter(b,a,temp,zi);
+temp2 = filterYao(b,a,temp);
+figure;
+plot([temp1,temp2]);

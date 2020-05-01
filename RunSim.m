@@ -13,12 +13,12 @@ snapCoef = 2.415e-6 + 4.5094e-07;
 
 
 
-trajParameters.dis = 0.04;
-trajParameters.vel = 0.25;
-trajParameters.acc = 10; 
-trajParameters.jerk = 800;
-trajParameters.snap = 64000;
+trajParameters.dis = 0.06;
+trajParameters.vel = 0.4;
+trajParameters.acc = 15; 
+trajParameters.jerk = 1200;
+trajParameters.snap = 200000;
 global alpha;
-alpha =  0.2;
+alpha =  0.6;
 
-sim('main',[0 0.2]);
+sim('main',[0 0.22]);

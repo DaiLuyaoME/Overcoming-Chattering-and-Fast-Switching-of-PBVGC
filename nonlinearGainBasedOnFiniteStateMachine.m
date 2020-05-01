@@ -329,8 +329,8 @@ errorBuffer = circshift(errorBuffer,-1);
 errorBuffer(end) = e;
 global errorFilter;
 % filteredError = filtfilt(errorFilter,errorBuffer);
-filteredError = filtfiltYao(errorFilter,errorBuffer);
-%filteredError = errorBuffer;
+filteredError = filtfilt(errorFilter,errorBuffer);
+filteredError = errorBuffer;
 tempE = filteredError(end);
 tempDe = filteredError(end) - filteredError(end-1);
 % errorBuffer(end) = tempE;
@@ -343,25 +343,30 @@ switch transitionType
     case 1
         
         if tempE * tempDe > 0
-            y = tempE * alpha;
+            y = e * alpha;
             alphaCount = numel(alphaBuffer);
         else
             if alphaCount > 0
-                y = alpha * tempE * alphaBuffer(alphaCount);
+                y = alpha * e * alphaBuffer(alphaCount);
                 alphaCount = alphaCount - 1;
             else
                 y = 0;
             end
-            %  y = 0;
+%             y = 0;
         end
         gain = 0;
     case 2
         global f;
-        x = tempE * tempDe * 5000;
-        x = x / (3e-9) * 10;
-        gain = f(x);
-        y =  gain * tempE;
-%         y = 0;
+        if tempE * tempDe >0
+            x = tempE * tempDe * 5000;
+            x = x / (3e-9) * 10;
+            gain = f(x);
+            y =  gain * tempE;
+        else
+            y = 0;
+            gain = 0;
+        end
+        %         y = 0;
 end
 
 %%
@@ -369,7 +374,7 @@ end
 
 
 
-% sys = [y,tempE * tempDe,gain];
+% sys = [y,tempE * tempDe * 5000,gain];
 sys = [y,tempE,gain];
 
 % end mdlOutputs

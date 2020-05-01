@@ -25,7 +25,7 @@ m = modelInfo.mass;
 % idealJerkCoef = sum(m) * tau;
 % idealSnapCoef = sum(m) * ( 1/wn.^2 + 0.5 * tau.^2);
 %%
-sigma = 200;%噪声的标准差，单位N
+sigma = 20;%噪声的标准差，单位N
 varNoise=sigma*sigma;%注意，白噪声的模块中的Noise Power 需要填成varNoise*Ts
 noisePower=varNoise*Ts;
 %%
@@ -56,8 +56,8 @@ global deDeltaLowerBound;
 deDeltaLowerBound = 1e-5;
 
 
-dwellTime = 1;
-num = 2;
+dwellTime = 5;
+num = 5;
 alphaBuffer = [];
 for i = 1:num
     temp = 1 / num * i * ones(dwellTime,1);
@@ -83,3 +83,13 @@ figure;
 x = linspace(-50,50,10000);
 plot(x,f(x));
 grid on;
+%%
+
+global errorBuffer
+errorBuffer = zeros(30,1);
+global errorFilter;
+errorFilter = designfilt('lowpassiir', 'FilterOrder', 2, 'PassbandFrequency', 50, 'PassbandRipple', 0.1, 'SampleRate', 5000);
+%%
+filter2 = designfilt('lowpassiir', 'FilterOrder', 2, 'PassbandFrequency', 50, 'PassbandRipple', 0.1, 'SampleRate', 5000);
+filter4 = designfilt('lowpassiir', 'FilterOrder', 4, 'PassbandFrequency', 50, 'PassbandRipple', 0.1, 'SampleRate', 5000);
+fvtool(filter2,filter4);

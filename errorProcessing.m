@@ -34,20 +34,18 @@ xlabel('Frequency (Hz)')
 ylabel('Power/Frequency (dB/Hz)');
 %%
 errorData = Err.signals.values;
-errorBuffer = zeros(30,1);
-errorDataFiltered = zeros(size(errorData));
+clear errorDataFiltered;
 num = numel(errorData);
-for i = 1:num
-    errorBuffer = circshift(errorBuffer,-1);
-    errorBuffer(end) = errorData(i);
-%     filteredError = filtfilt(errorFilter,errorBuffer);
-    filteredError = filtfiltYao(errorFilter,errorBuffer);
-    errorDataFiltered(i) = filteredError(end);
-%     errorBuffer(end) = filteredError(end);
-    
+for i = 181:num
+    filteredError = filtfiltYao(errorFilter,errorData(i-180 : i));
+    errorDataFiltered(i-180) = filteredError(end);
 end
+% tempFiltered = filter(errorFilter,errorData);
+temp = [errorData(181:num),errorDataFiltered'];
 figure;
-plot([errorData,errorDataFiltered]);
+plot(temp);
+%%
+figure;powerSpectralAnalysis([errorData,errorDataFiltered,tempFiltered],5000);
 %%
 temp = filtfilt(errorFilter,errorData);
 figure;

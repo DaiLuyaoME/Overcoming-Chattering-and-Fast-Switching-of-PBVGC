@@ -1,47 +1,73 @@
-%% Code section A: plot tracking error
+%% plot chattering phenomenon
+error1 = Err1.signals.values;
+error2 = Err.signals.values;
+u = nonlinearU.signals.values * 1e9;
+accSignal = acc.signals.values;
+error = [error1,error2]*1e9;
+ratio = max(max(abs(error))) / max(accSignal);
+time = acc.time;
 figure;
-plot(Err.time,Err.signals.values*1e9,'displayname','tracking error','linewidth',2);
-xlim([acc.time(1),acc.time(end)]);
+subplot(2,1,1);
+h = plot(time,error,'linewidth',1);
+h(2).Color = [0.9290    0.6940    0.1250];
+h(1).DisplayName = 'linear feedback';
+h(2).DisplayName = 'PBVGC';
 hold on;
-temp1=max(abs(Err.signals.values*1e9));
-temp2=max(abs(acc.signals.values));
-temp3=max(abs(snap.signals.values));
-temp4=max(abs(jerk.signals.values));
-ratio=temp1/temp2;
-ratio31=temp1/temp3;
-ratio41 = temp1/temp4;
-
-% To comment these lines to disable scaled plot of corresponding
-% derivatives with tracking error.
-% plot(acc.time,ratio*acc.signals.values,'DisplayName','scaled acceleration','LineWidth',2);
-plot(snap.time,ratio31*snap.signals.values,'DisplayName','scaled snap','LineWidth',2);
-% plot(jerk.time,ratio41*jerk.signals.values,'DisplayName','scaled jerk','LineWidth',2);
-
-
-legend1 = legend(gca,'show');
-
-%% Code section B: plot feedback control signal
+h = plot(time,ratio * accSignal,'linewidth',1);
+h.Color = 'r';
+h.DisplayName = 'scaled acc';
+xlim([0,max(time)]);
+ylabel('error (nm)');
+legend show;
+set(gca,'fontsize',13);
+subplot(2,1,2);
+h = plot(time,u,'linewidth',1);
+h.Color = [0.9290    0.6940    0.1250];
+xlim([0,max(time)]);
+ylabel('u (nm)');
+xlabel('time (s)');
+set(gca,'fontsize',13);
+%% plot overcome chattering with dwell time
+error1 = Err1.signals.values;
+error2 = Err.signals.values;
+u = nonlinearU.signals.values * 1e9;
+accSignal = acc.signals.values;
+error = [error1,error2]*1e9;
+ratio = max(max(abs(error))) / max(accSignal);
+time = acc.time;
 figure;
-plot(ufb.time,ufb.signals.values,'displayname','feedback control signal','linewidth',2);
-xlim([ufb.time(1),ufb.time(end)]);
+h = plot(time,error,'linewidth',1);
+h(2).Color = [0.9290    0.6940    0.1250];
+h(1).DisplayName = 'PBVGC';
+h(2).DisplayName = 'PBVGC with dwell time';
 hold on;
-temp1=max(abs(ufb.signals.values));
-temp2=max(abs(acc.signals.values));
-temp3=max(abs(snap.signals.values));
-temp4=max(abs(jerk.signals.values));
-ratio=temp1/temp2;
-ratio31=temp1/temp3;
-ratio41 = temp1/temp4;
-
-% To comment these lines to disable scaled plot of corresponding
-% derivatives with feedback control signal.
-%  plot(acc.time,ratio*acc.signals.values,'DisplayName','scaled acceleration','LineWidth',2);
- plot(snap.time,ratio31*snap.signals.values,'DisplayName','scaled snap','LineWidth',2);
-%  plot(jerk.time, ratio41*jerk.signals.values,'DisplayName','scaled jerk','LineWidth',2);
-
-legend1 = legend(gca,'show');
-xlabel('time (s)','fontsize',20);
-h = ylabel('control signal (N)','fontsize',20);
-set(gca,'fontsize',16);
-
-
+h = plot(time,ratio * accSignal,'linewidth',1);
+h.Color = 'r';
+h.DisplayName = 'scaled acc';
+xlim([0,max(time)]);
+ylabel('error (nm)');
+legend show;
+set(gca,'fontsize',13);
+xlabel('time (s)');
+%% plot fast switching
+error1 = Err1.signals.values;
+error2 = Err.signals.values;
+u = nonlinearU.signals.values * 1e9;
+accSignal = acc.signals.values;
+error = [error1,error2]*1e9;
+ratio = max(max(abs(error))) / max(accSignal);
+time = acc.time;
+figure;
+h = plot(time,error,'linewidth',1);
+h(2).Color = [0.9290    0.6940    0.1250];
+h(1).DisplayName = 'linear feedback';
+h(2).DisplayName = 'PBVGC with dwell time';
+hold on;
+% h = plot(time,ratio * accSignal,'linewidth',1);
+% h.Color = 'r';
+% h.DisplayName = 'scaled acc';
+xlim([0.073,0.16]);
+ylabel('error (nm)');
+legend show;
+set(gca,'fontsize',13);
+xlabel('time (s)');
